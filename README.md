@@ -1,6 +1,6 @@
 # React Hooks
 - React Hook은 Functional Component에 기능을 추가할 때 사용하는 함수
-- Functional component에서 상태값(state)을 사용할 수 있고 자식요소에 접근 할 수있음
+- Functional Component에서 상태값(state)을 사용할 수 있고 자식요소에 접근 할 수있음
 > **state** <br>
 컴포넌트 내 변경 가능한 데이터 저장소<br>
 UI(엘리먼트)에 반영하기 위해 유지해야할 값 묶음<br>
@@ -32,3 +32,9 @@ const [inputs, setInputs] = useState({
   - `inputs` 값을 업데이트하는 함수. 클래스 컴포넌트에서의 `this.setState`는 이전 `state`와 새로운 `state`를 합치지만 `setInputs`은 이전값을 덮어쓴다.
 - `useState(...)`
   - `...` 값은 초기값을 의미. `useState()`는 인자로 초기 `state` 설정값을 하나 받는다. 이 초기값은 첫 번째 렌더링 시에 딱 한 번 사용된다.
+  
+## useRef()
+- useRef()의 3가지 활용 방법
+  - 특정 DOM 선택하기
+  - 컴포넌트 안의 변수 만들기
+  - 리렌더링 방지하기
