@@ -35,7 +35,6 @@ function InputSample() {
         value={name}
         ref={nameInput}
         autoComplete="off"
-        autoFocus
       />
       <input
         name="nickname"

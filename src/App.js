@@ -37,9 +37,14 @@ export default function App() {
   ]);
 
   const nextId = useRef(4);
+  // const usernameRef = useRef("");
+  // const emailRef = useRef("");
+
   const onCreate = () => {
     const user = {
       id: nextId.current,
+      // username: usernameRef.current.value,
+      // email: emailRef.current.value,
       username,
       email,
     };
@@ -50,8 +55,14 @@ export default function App() {
       username: "",
       email: "",
     });
+
+    // usernameRef.current.value = "";
+    // emailRef.current.value = "";
+
     nextId.current += 1;
   };
+
+  console.log("Render");
 
   return (
     <>
@@ -64,6 +75,9 @@ export default function App() {
         onChange={onChange}
         onCreate={onCreate}
       />
+      {/* <input name="username" placeholder="USERNAME" ref={usernameRef} />
+      <input name="email" placeholder="EMAIL" ref={emailRef} /> */}
+      <button onClick={onCreate}>CREATE</button>
       <UserList users={users} />
     </>
   );
