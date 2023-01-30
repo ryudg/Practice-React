@@ -136,7 +136,7 @@ const onCreate = () => {
 }
 ```
 ## 3. useEffect()
-> 기본형 `useEffect(함수, [, 의존값]);`
+> 기본형 `useEffect(effect, [, 의존값]);`
 >> **effect** - 
 > 함수의 형태로, 렌더링 이후 실행할 함수(리액트는 함수를 기억 했다가 DOM 업데이트 이후 불러냄) <br> 
 > 함수에서 함수를 return 할 경우 그 함수가, 컴포넌트가 unmount 될 때 정리의 개념으로 한번 실행됨() - `cleanup` 함수 <br>
