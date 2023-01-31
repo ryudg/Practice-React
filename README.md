@@ -136,12 +136,12 @@ const onCreate = () => {
 }
 ```
 # 3. useEffect()
-> 기본형 `useEffect(effect, [, 의존값]);`
+> 기본형 `useEffect(effect, [, deps]);`
 >> **effect** - 
 > 함수의 형태로, 렌더링 이후 실행할 함수(리액트는 함수를 기억 했다가 DOM 업데이트 이후 불러냄) <br> 
 > 함수에서 함수를 return 할 경우 그 함수가, 컴포넌트가 unmount 될 때 정리의 개념으로 한번 실행됨() - `cleanup` 함수 <br>
 > (만약 컴포넌트가 mount 될 때 이벤트 리스너를 통해 이벤트를 추가하였다면 컴포넌트가 unmount 될 때 이벤트를 삭제해주어야한다. 그렇지 않으면 컴포넌트가 Re-rendering 될 때마다 새로운 이벤트 리스너가 핸들러에 바인딩됨.) <br> <br>
->> **의존값** - 
+>> **deps, 의존값** - 
 > 배열의 형태로, 특정한 값이 변경될 때 effect함수를 실행 하고 싶을 경우 배열 안에 그 값을 넣어줌. <br>
 > 빈 배열을 넣을 경우 컴포넌트가 mount 될 때에만 실행 <br>
 > 배열을 생략할 경우 렌더링이 될 때 마다 실행
@@ -183,15 +183,15 @@ useEffect(() => {
 - `useEffect` 안에서 사용하는 state나, props 가 있다면, useEffect 의 의존값에 넣어주어야 합
   - `useEffect` 에 등록한 함수가 실행 될 때 최신 props / state를 가르키지 않게 됨
 
-# 4. useMemo() & useCallback() & React.memo
+# 4. useMemo() & useCallback() & React.memo()
 ## 4.1 Import
 ```javascript
 import React, { useMemo, useCallback } from 'react';
 ```
 ## 4.2 useMemo()
-> 기본형 `const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);`
-> 첫번째 파라미터에는 어떤 연산을 할지 함수를 정의
-> 두번째에는 useEffect와 마찬가지로 의존값들을 넣어주면 되는데, 이 배열 안에 넣은 내용이 변경되면 등록한 함수를 호출해서 값을 연산
+> 기본형 `const memoizedValue = useMemo(() => computeExpensiveValue(deps), [ deps ]);`<br>
+> 첫번째 파라미터에는 어떤 연산을 할지 함수를 정의<br>
+> 두번째에는 useEffect와 마찬가지로 의존값들을 넣어주면 되는데, 이 배열 안에 넣은 내용이 변경되면 등록한 함수를 호출해서 값을 연산<br>
 > 만약 빈 배열을 넣는다면 useEffect와 마찬가지로 마운트 될 때에만 값을 계산하고 그 이후론 계속 Memoization된 값을 꺼내와 사용
 
 - `useMemo`는 성능 최적화를 위하여 연산된 값을 재사용하는 기능을 가진 함수
@@ -199,11 +199,113 @@ import React, { useMemo, useCallback } from 'react';
   - Memoization이란 기존에 수행한 연산의 결과값을 어딘가에 저장해두고 동일한 입력이 들어오면 재활용하는 프로그래밍 기법
   - Memoization을 절적히 적용하면 중복 연산을 피할 수 있기 때문에 메모리를 조금 더 쓰더라도 애플리케이션의 성능을 최적화할 수 있다.
 
+- 활성 사용자 수 세기
+```javascript
+// App.js
+...
 
+function countActiveUsers(users) {
+  console.log("사용자수");
+  return users.filter((user) => user.active).length;
+}
+... 
+
+const count = countActiveUsers(users);
+```
+- 사용자명을 눌러 활성화 상태로 만들면 사용자 수가 업데이트 된다.
+  - 이때 성능 문제가 발생하는데 input 값을 변경할 때에도 `countActiveUsers `가 호출되는 것이다.
+  - 활성 사용자 수를 세는것은 `users` 에 변화가 있을때만 세야되는건데, input 값이 바뀔 때에도 컴포넌트가 리렌더링 되므로 이렇게 불필요할때에도 호출하여서 자원이 낭비된다.
+  
+- useMemo()
+```javascript
+// App.js
+...
+
+const count = useMemo(() => countActiveUsers(users), [users]);
+```
 
 ## 4.2 useCallback()
+> 기본형 `const memoizedCallback = useCallback(() =>, [ deps ]);`
 
+- `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수. <br>
+- `useCallback`은 첫 번째 인자로 넘어온 함수를, 두 번째 인자로 넘어온 배열 형태의 함수 실행 조건의 값이 변경될 때까지 저장해놓고 재사용할 수 있게 해줌.
+> 컴포넌트 안에 함수가 선언되어있을 때 이 함수는 해당 컴포넌트가 렌더링 될 때마다 새로운 함수가 생성되는데, `useCallback`을 사용하면 해당 컴포넌트가 렌더링 되더라도 그 함수가 의존하는 값(deps)들이 바뀌지 않는 한 기존 함수를 재사용할 수 있다.
 
+- `onChange`,`onCreate`, `onRemove`, `onToggle`은 컴포넌트가 리렌더링 될 때 마다 새로 만듬
+  - props 가 바뀌지 않았으면 Virtual DOM 에 새로 렌더링하는 것 조차 하지 않고 컴포넌트의 결과물을 재사용 하는 최적화 작업을 위해서는 함수를 재사용하는 것이 필수
 
-## 4.
+- useCallback() 예시
+```javascript
+// App.js
+
+...
+
+// useCallback 사용 전
+const onToggle = (id) => {
+  setUsers(
+    users.map((user) =>
+      user.id === id ? { ...user, active: !user.active } : user
+    )
+  );
+};
+// useCallback 사용 후
+const onToggle = useCallback(
+  (id) => {
+    setUsers(
+      users.map((user) =>
+        user.id === id ? { ...user, active: !user.active } : user
+      )
+    );
+  },
+  [users]
+);
+```
+- 주의⚠
+  - 함수 안에서 사용하는 상태 혹은 props 가 있다면 꼭, deps 배열안에 포함시켜야 된다.
+  - deps 배열 안에 함수에서 사용하는 값을 넣지 않게 된다면, 함수 내에서 해당 값들을 참조할때 가장 최신 값을 참조 할 것이라고 보장 할 수 없다. 
+  - props 로 받아온 함수가 있다면, 이 또한 deps 에 넣어야 한다.
+
+- `useCallback` 은 `useMemo` 를 기반으로 만들어졌기 때문에 아래와 같이 표현할 수도 있다.
+```javascript
+const onToggle = useMemo(
+  () => () => {
+    /* ... */
+  },
+  [users]
+);
+```
+
+## 4.3 React.memo()
+> 기본형
+```javascript
+const MyComponent = React.memo(function MyComponent(props) {
+  /* props를 사용하여 렌더링 */
+});
+
+...
+
+export default React.memo(MyComponent);
+```
+
+> `React.memo`는 Memoization(메모이제이션) 기법으로 동작하며, 고차 컴포넌트(Higher Order Component, HOC)이다.<br>
+> 컴포넌트가 props로 동일한 결과를 렌더링하면, `React.memo`를 호출하고 결과를 메모이징(Memoizaing) 하도록 래핑하여 경우에 따라 성능 향상을 할 수 있다.<br>
+> 즉, React는 컴포넌트를 재렌더링하지 않고 마지막으로 렌더링된 결과를 재사용한다.<br>
+> `React.memo`는 props 변화에만 영향을 준다.<br>
+> 즉, 함수 컴포넌트 안에서 구현한 state나 context가 변할 때는 재렌더링된다.<br>
+> props가 갖는 복잡한 객체에 대하여 얕은 비교만을 수행하는 것이 기본 동작이다.<br>
+> 다른 비교 동작을 원한다면, 두번째 인자로 별도의 비교 함수를 제공하면 된다.<br>
+
+- props가 이전과 동일한 값이면 재렌더링하지 않고, 다른 값이면 재렌더링하여 컴포넌트를 다시 만들어 반환한다.
+- `React.memo`에 쓰인 컴포넌트 안에서 구현한 state가 변경되면 컴포넌트는 재렌더링이 된다.
+
+- 렌더링 최적화 하지 않을 컴포넌트에 `React.memo` 를 사용하는것은, 불필요한 props 비교만 하는 것이기 때문에 실제로 렌더링을 방지할수있는 상황이 있는 경우에만 사용
+
+- `React.memo`에서 두번째 파라미터에 `propsAreEqual` 이라는 함수를 사용하여 특정 값들만 비교를 하는 것도 가능
+```javascript
+export default React.memo(
+  UserList,
+  (prevProps, nextProps) => prevProps.users === nextProps.users
+);
+```
+- **`useCallback`, `useMemo`, `React.memo` 는 컴포넌트의 성능을 실제로 개선할수있는 상황에서만 사용!!!**
 
