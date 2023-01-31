@@ -183,7 +183,7 @@ useEffect(() => {
 - `useEffect` 안에서 사용하는 state나, props 가 있다면, useEffect 의 의존값에 넣어주어야 합
   - `useEffect` 에 등록한 함수가 실행 될 때 최신 props / state를 가르키지 않게 됨
 
-# 4. useMemo() & useCallback() & React.memo
+# 4. useMemo() & useCallback() & React.memo()
 ## 4.1 Import
 ```javascript
 import React, { useMemo, useCallback } from 'react';
@@ -227,7 +227,7 @@ const count = useMemo(() => countActiveUsers(users), [users]);
 ## 4.2 useCallback()
 > 기본형 `const memoizedCallback = useCallback(() =>, [ deps ]);`
 
-- `useCallback`은 `useMemo`와 비슷한 Hook입니다. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수. <br>
+- `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수. <br>
 - `useCallback`은 첫 번째 인자로 넘어온 함수를, 두 번째 인자로 넘어온 배열 형태의 함수 실행 조건의 값이 변경될 때까지 저장해놓고 재사용할 수 있게 해줌.
 > 컴포넌트 안에 함수가 선언되어있을 때 이 함수는 해당 컴포넌트가 렌더링 될 때마다 새로운 함수가 생성되는데, `useCallback`을 사용하면 해당 컴포넌트가 렌더링 되더라도 그 함수가 의존하는 값(deps)들이 바뀌지 않는 한 기존 함수를 재사용할 수 있다.
 
@@ -275,5 +275,26 @@ const onToggle = useMemo(
 );
 ```
 
-## 4.
+## 4.3 React.memo()
+> 기본형
+```javascript
+const MyComponent = React.memo(function MyComponent(props) {
+  /* props를 사용하여 렌더링 */
+});
+
+...
+
+export default React.memo(MyComponent);
+```
+
+> React.memo는 Memoization(메모이제이션) 기법으로 동작하며, 고차 컴포넌트(Higher Order Component, HOC)이다.<br>
+> 컴포넌트가 props로 동일한 결과를 렌더링하면, React.memo를 호출하고 결과를 메모이징(Memoizaing) 하도록 래핑하여 경우에 따라 성능 향상을 할 수 있다.<br>
+> 즉, React는 컴포넌트를 재렌더링하지 않고 마지막으로 렌더링된 결과를 재사용한다.<br>
+> React.memo는 props 변화에만 영향을 준다.<br>
+> 즉, 함수 컴포넌트 안에서 구현한 state나 context가 변할 때는 재렌더링된다.<br>
+> props가 갖는 복잡한 객체에 대하여 얕은 비교만을 수행하는 것이 기본 동작이다.<br>
+> 다른 비교 동작을 원한다면, 두번째 인자로 별도의 비교 함수를 제공하면 된다.<br>
+
+- props가 이전과 동일한 값이면 재렌더링하지 않고, 다른 값이면 재렌더링하여 컴포넌트를 다시 만들어 반환한다.
+- React.memo에 쓰인 컴포넌트 안에서 구현한 state가 변경되면 컴포넌트는 재렌더링이 된다.
 
