@@ -309,3 +309,89 @@ export default React.memo(
 ```
 - **`useCallback`, `useMemo`, `React.memo` 는 컴포넌트의 성능을 실제로 개선할수있는 상황에서만 사용!!!**
 
+# 5. useReducer()
+> 기본형 `const [state, dispatch] = useReducer(reducer, initialState, init);` <br>
+> **state** - 컴포넌트에서 사용할 상태 <br>
+> **dispatch** 함수 - 첫번째 인자인 reducer 함수를 실행시킨다. 컴포넌트 내에서 state의 업데이트를 일으키키 위해 사용하는 함수 <br>
+> **reducer** 함수 - 컴포넌트 외부에서 state를 업데이트 하는 함수. 현재state, action 객체를 인자로 받아, 기존의 state를 대체하여 새로운 state를 반환하는 함수 <br>
+> **initialState** - 초기 state <br>
+> **init** - 초기 함수 (초기 state를 조금 지연해서 생성하기 위해 사용)
+
+- `useReducer`는 state(상태)를 관리하고 업데이트하는 Hook인 `useState`를 대체할 수 있는 Hook
+- 한 컴포넌트 내에서 state를 업데이트하는 로직 부분을 그 컴포넌트로부터 분리시키는 것을 가능
+- `seReducer`는 state 업데이트 로직을 분리하여 컴포넌트의 외부에 작성하는 것을 가능하게 함으로써, 코드의 최적화
+  - state 업데이트 로직을 또다른 파일에 작성해서 (분리), 분리된 파일을 불러와서 사용하는 것도 가능
+
+> **useState** vs **useReducer**
+>- useState
+>   - 관리해야 할 state가 1개일 경우
+>   - 그 state가 단순한 숫자, 문자열 또는 Boolean 값일 경우
+> ```javascript
+>  const [value, setValue] = useState(true);
+> ```
+>- useReducer
+>   - 관리해야 할 State가 1개 이상, 복수일 경우
+>   - 혹은 현재는 단일 state 값만 관리하지만, 추후 유동적일 가능성이 있는 경우
+>   - 스케일이 큰 프로젝트의 경우
+>   - state의 구조가 복잡해질 것으로 보이는 경우
+> ```javascript
+> setUsers(users => users.concat(user));
+> setInputs({
+>   username: '',
+>   email: ''
+> });
+> ```
+
+## 5.1 Import
+```javascript
+import React, { useReducer } from "react";
+```
+
+## 5.2 dispatch
+- `reducer` 함수를 실행 시킨다.
+- `action` 객체를 인자로 받으며 `action` 객체는 어떤 행동인지를 나타내는 type 속성과 해당 행동과 관련된 데이터(payload)를 담고 있다. (action 객체의 형태는 자유)
+- `action`을 이용하여 컴포넌트 내에서 state의 업데이트를 일으킨다. (업데이트를 위한 정보를 가지고 있음)
+    - action type만 정의하여 사용 
+    ```javascript
+    <button onClick={() => dispatch({ type: "INCREMENT" })}>증가</button>
+    ```
+    - action type과, 데이터를 정의하여 사용 
+    ```javascript
+    <button onClick={() => dispatch({ type: "INCREMENT", payload: 1, id : 0, text : "useReducer" })}>증가</button>
+    ```
+
+## 5.3 reducer 
+- dispatch 함수에 의해 실행되며, 컴포넌트 외부에서 state를 업데이트 하는 로직을 담당 한다.
+- 함수의 인자로는 state와 `action`을 받게 된다.
+- state와 action을 활용하여 새로운 state를 반환 한다.
+  - action type만 정의하여 사용
+  ```javascript
+  function reducer(state, action) {
+  switch (action.type) {
+    case "INCREMENT":
+      return { count: state.count + 1 };
+    case "DECREMENT":
+      return { count: state.count - 1 };
+    default:
+      throw new Error("unsupported action type: ", action.type);
+    }
+  }
+  ```
+  - action type과, 데이터를 정의하여 사용
+  ```javascript
+  function reducer(state, action) {
+    switch (action.type) {
+      case "INCREMENT":
+        return { count: state.count + action.payload };
+      case "DECREMENT":
+        return { count: state.count - action.payload };
+      default:
+        throw new Error("unsupported action type: ", action.type);
+    }
+  }
+  ```
+
+
+
+
+
