@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 function User({ user, onRemove, onToggle }) {
+  useEffect(() => {
+    console.log("나타남");
+    console.log(user);
+    return () => {
+      console.log("사라짐");
+      console.log(user);
+    };
+  }, [user]);
+
   return (
     <div>
       <b

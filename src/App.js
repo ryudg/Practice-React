@@ -79,7 +79,7 @@ export default function App() {
     );
   };
 
-  console.log("Render");
+  // console.log("Render");
 
   return (
     <>
