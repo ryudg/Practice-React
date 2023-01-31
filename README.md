@@ -160,12 +160,12 @@ const onCreate = () => {
 > - setInterval, setTimeout 을 사용하여 등록한 작업들 clear 하기 (clearInterval, clearTimeout)<br>
 > - 라이브러리 인스턴스 제거<br>
  
- ### 3.1 useRef import
+ ### 3.1 useEffect import
 ```javascript
 import React, { useEffect } from "react";
 ```
 
-### 3.2 useRef 선언
+### 3.2 useEffect 선언
 ```javascript
 useEffect(() => {
   console.log("마운트 될 때만 실행")
