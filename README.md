@@ -326,12 +326,21 @@ export default React.memo(
 >- useState
 >   - 관리해야 할 state가 1개일 경우
 >   - 그 state가 단순한 숫자, 문자열 또는 Boolean 값일 경우
+> ```javascript
+>  const [value, setValue] = useState(true);
+> ```
 >- useReducer
 >   - 관리해야 할 State가 1개 이상, 복수일 경우
 >   - 혹은 현재는 단일 state 값만 관리하지만, 추후 유동적일 가능성이 있는 경우
 >   - 스케일이 큰 프로젝트의 경우
 >   - state의 구조가 복잡해질 것으로 보이는 경우
-
+> ```javascript
+> setUsers(users => users.concat(user));
+> setInputs({
+>   username: '',
+>   email: ''
+> });
+> ```
 
 ## 5.1 Import
 ```javascript
@@ -340,15 +349,15 @@ import React, { useReducer } from "react";
 
 ## 5.2 dispatch
 - `reducer` 함수를 실행 시킨다.
-- `action` 객체를 인자로 받으며 `action` 객체는 어떤 행동인지를 나타내는 type 속성과 해당 행동과 관련된 데이터(payload)를 담고 있다.
-- `action`을 이용하여 컴포넌트 내에서 state의 업데이트를 일으킨다.
+- `action` 객체를 인자로 받으며 `action` 객체는 어떤 행동인지를 나타내는 type 속성과 해당 행동과 관련된 데이터(payload)를 담고 있다. (action 객체의 형태는 자유)
+- `action`을 이용하여 컴포넌트 내에서 state의 업데이트를 일으킨다. (업데이트를 위한 정보를 가지고 있음)
     - action type만 정의하여 사용 
     ```javascript
     <button onClick={() => dispatch({ type: "INCREMENT" })}>증가</button>
     ```
     - action type과, 데이터를 정의하여 사용 
     ```javascript
-    <button onClick={() => dispatch({ type: "INCREMENT", payload: 1 })}>증가</button>
+    <button onClick={() => dispatch({ type: "INCREMENT", payload: 1, id : 0, text : "useReducer" })}>증가</button>
     ```
 
 ## 5.3 reducer 
@@ -381,9 +390,6 @@ import React, { useReducer } from "react";
     }
   }
   ```
-
-
-
 
 
 
