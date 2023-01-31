@@ -1,4 +1,7 @@
-# [![React](https://skillicons.dev/icons?i=react)](https://skillicons.dev) React Hooks
+[![React](https://skillicons.dev/icons?i=react)](https://skillicons.dev)
+#  React
+
+# 1. React Hook이란?
 - React Hook은 함수형 컴포넌트에 기능을 추가할 때 사용하는 함수
 - 함수형 컴포넌트에서 상태값(state)을 사용할 수 있고 자식요소에 접근 할 수있음
 
@@ -29,17 +32,17 @@ UI(엘리먼트)에 반영하기 위해 유지해야할 값 묶음<br>
 > - 최상위 레벨 에서만 Hook을 호출한다. (반복문이나 조건문 코드블랙 내에서 Hook을 호출하면 안됨)
 > - 일반 javascript 함수 스코프 내에서 호출하지 않는다 (오직 React 함수 내에서 Hook을 호출한다.)
 
-# 1. useState()
+# 2. useState()
 > 기본형 `const [state, setState] = useState(초기값);`
 
 - `useState`는 컴포넌트에서 `state`값을 추가할때 사용된다.<br>
 함수형 컴포넌트에서는 클래스형 컴포넌트처럼 `state`를 사용할 수 없어, Hook을 사용해 `state`와 같은 기능을 할 수 있도록 만듬
 - 하나의 `useState`는 하나의 상태 값만 관리를 할 수 있어 만약에 컴포넌트에서 관리해야 할 상태가 여러 개라면 `useState`를 여러번 사용해야 한다
-## 1.1 import
+## 2.1 import
 ```javascript
 import React, { useState } from 'react';
 ```
-## 1.2 useState 선언
+## 2.2 useState 선언
 
 ```javascript
 const [inputs, setInputs] = useState({
@@ -56,7 +59,7 @@ const [inputs, setInputs] = useState({
 - `useState(...)`
   - `...` 값은 초기값을 의미. `useState`는 인자로 초기 `state` 설정값을 하나 받는다. 이 초기값은 첫 번째 렌더링 시에 딱 한 번 사용된다.
   
-# 2. useRef()
+# 3. useRef()
 > 기본형 `const refContainer = useRef(초기값);`
 
 - `useRef`는 `.current` property로 전달된 인자(initialValue)로 초기화된 변경 가능한 `ref`객체를 반환합니다. 반환된 객체는 컴포넌트의 전 생애주기를 통해 유지된다. <br> 본질적으로 `useRef`는 `.current` property에 변경 가능한 값을 담고 있는 상자와 같다.
@@ -65,25 +68,25 @@ const [inputs, setInputs] = useState({
   - 컴포넌트 안의 변수 생성
   - Rerendering 방지
  
-## 2.1 import
+## 3.1 import
 ```javascript
 import React, { useRef } from 'react';
 ```
-## 2.2 특정 DOM 선택
+## 3.2 특정 DOM 선택
  > JavaScript 를 사용할 때는, 특정 DOM 을 선택해야 하는 상황에 `getElementById`, `querySelector`와 같은 DOM Selector 함수를 사용해서 DOM 을 선택한다.<br><br>
 함수형 컴포넌트에서 사용할 때는 `useRef`를 사용하고 클래스형 컴포넌트에서는 콜백 함수를 사용하거나 React.createRef 라는 함수를 사용한다.
 
 - `useRef` 를 사용하여 Ref객체를 만들고, 이 객체를 선택하고 싶은 DOM 에 `ref`값으로 설정한다. 그러면, Ref객체의 `.current`값은 DOM 을 가리키게 된다.
 - RESET 버튼을 클릭했을 때 Name `input`에 포커스가 잡히도록 `useRef` 를 사용하여 기능을 구현하기
-### 2.2.1 useRef 선언
+### 3.2.1 useRef 선언
 ```javascript
 const nameInput = useRef();
 ```
-### 2.2.2 `focus()` DOM API 호출
+### 3.2.2 `focus()` DOM API 호출
 ```javascript
 nameInput.current.focus();
 ```
-### 2.2.3  선택하고 싶은 DOM에 `ref` 값 설정
+### 3.2.3  선택하고 싶은 DOM에 `ref` 값 설정
 ```javascript
 <input
   name="name"
@@ -94,7 +97,7 @@ nameInput.current.focus();
   autoComplete="off"
 />
 ```
-## 2.3 컴포넌트 안의 변수 생성
+## 3.3 컴포넌트 안의 변수 생성
 >컴포넌트 안에서 조회 및 수정할 수 있는 변수를 관리할 수 있다.
 >`useRef` 로 관리하는 변수는 값이 바뀐다고 해서 컴포넌트가 리렌더링되지 않는다.<br>
 >리액트 컴포넌트에서의 상태는 상태를 바꾸는 함수를 호출하고 난 다음 렌더링 이후로 업데이트된 상태를 조회할 수 있지만, <br>
@@ -107,12 +110,12 @@ nameInput.current.focus();
 - `useRef` 를 사용할 때 파라미터를 넣어주면, 이 값이 `.current`값의 기본값이 된다.
 - 값을 수정할 때는 `.current`값을 수정하면 되고 조회할 때는 `.current`를 조회하면 된다.
 
-### 2.3.1 Id 값 지정
+### 3.3.1 Id 값 지정
 - 현재 3개의 Id 값이 있으므로 Id 값으로 `4` 지정
 ```javascript
 const nextId = useRef(4);
 ```
-### 2.3.2 Id 값 증가
+### 3.3.2 Id 값 증가
 - `onCreate()`가 실행될 때마다 `nextId`의 값이 1씩 증가
 ```javascript
 const onCreate = () => {
@@ -120,7 +123,7 @@ const onCreate = () => {
   nextId.current += 1;
 };
 ```
-## 2.4 Re-rendering 방지
+## 3.4 Re-rendering 방지
 > 컴포넌트가 렌더링 된다는 것은 함수(컴포넌트)를 호출하여 실행되는 것을 의미. <br>
 > 함수가 실행될 때마다 내부에 선언되어 있던 표현식(변수나 또 다른 함수 등)도 매번 다시 선언되어 사용. <br>
 > 컴포넌트는 자신의 `state`가 변경되거나, 부모에게서 받는 `props`가 변경되었을 때마다 리렌더링 됨. <br>
@@ -130,18 +133,18 @@ const onCreate = () => {
 - **`onChange` 구현 부분을 `ref`값으로 대체해서 단점을 해결할 수 있다.** 
 - `stat`e로 event의 value에 접근하지 않고 `refObject.current.value`를 사용하는 방법.
 
-### 2.4.1 useRef 선언
+### 3.4.1 useRef 선언
 ```javascript
 const usernameRef = useRef("");
 const emailRef = useRef("");
 ```
-### 2.4.2 선택하고 싶은 DOM에 `ref` 값 설정
+### 3.4.2 선택하고 싶은 DOM에 `ref` 값 설정
 ```javascript
 <input name="username" placeholder="USERNAME" ref={usernameRef} />
 <input name="email" placeholder="EMAIL" ref={emailRef} />
 ```
 
-### 2.4.3 `refObject.current.value` 사용 `user`에 값 저장
+### 3.4.3 `refObject.current.value` 사용 `user`에 값 저장
 ```javascript
 const onCreate = () => {
   const user = {
@@ -155,7 +158,7 @@ const onCreate = () => {
   nextId.current += 1;
 }
 ```
-# 3. useEffect()
+# 4. useEffect()
 > 기본형 `useEffect(effect, [, deps]);`
 >> **effect** - 
 > 함수의 형태로, 렌더링 이후 실행할 함수(리액트는 함수를 기억 했다가 DOM 업데이트 이후 불러냄) <br> 
@@ -180,12 +183,12 @@ const onCreate = () => {
 > - setInterval, setTimeout 을 사용하여 등록한 작업들 clear 하기 (clearInterval, clearTimeout)<br>
 > - 라이브러리 인스턴스 제거<br>
  
-## 3.1 useEffect import
+## 4.1 useEffect import
 ```javascript
 import React, { useEffect } from "react";
 ```
 
-## 3.2 useEffect 선언
+## 4.2 useEffect 선언
 ```javascript
 useEffect(() => {
   console.log("마운트 될 때만 실행")
@@ -203,12 +206,12 @@ useEffect(() => {
 - `useEffect` 안에서 사용하는 state나, props 가 있다면, useEffect 의 의존값에 넣어주어야 합
   - `useEffect` 에 등록한 함수가 실행 될 때 최신 props / state를 가르키지 않게 됨
 
-# 4. useMemo() & useCallback() & React.memo()
-## 4.1 Import
+# 5. useMemo() & useCallback() & React.memo()
+## 5.1 Import
 ```javascript
 import React, { useMemo, useCallback } from 'react';
 ```
-## 4.2 useMemo()
+## 5.2 useMemo()
 > 기본형 `const memoizedValue = useMemo(() => computeExpensiveValue(deps), [ deps ]);`<br>
 > 첫번째 파라미터에는 어떤 연산을 할지 함수를 정의<br>
 > 두번째에는 useEffect와 마찬가지로 의존값들을 넣어주면 되는데, 이 배열 안에 넣은 내용이 변경되면 등록한 함수를 호출해서 값을 연산<br>
@@ -244,7 +247,7 @@ const count = countActiveUsers(users);
 const count = useMemo(() => countActiveUsers(users), [users]);
 ```
 
-## 4.2 useCallback()
+## 5.3 useCallback()
 > 기본형 `const memoizedCallback = useCallback(() =>, [ deps ]);`
 
 - `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수. <br>
@@ -295,7 +298,7 @@ const onToggle = useMemo(
 );
 ```
 
-## 4.3 React.memo()
+## 5.4 React.memo()
 > 기본형
 ```javascript
 const MyComponent = React.memo(function MyComponent(props) {
@@ -329,7 +332,7 @@ export default React.memo(
 ```
 - **`useCallback`, `useMemo`, `React.memo` 는 컴포넌트의 성능을 실제로 개선할수있는 상황에서만 사용!!!**
 
-# 5. useReducer()
+# 6. useReducer()
 > 기본형 `const [state, dispatch] = useReducer(reducer, initialState, init);` <br>
 > **state** - 컴포넌트에서 사용할 상태 <br>
 > **dispatch** 함수 - 첫번째 인자인 reducer 함수를 실행시킨다. 컴포넌트 내에서 state의 업데이트를 일으키키 위해 사용하는 함수 <br>
@@ -362,12 +365,12 @@ export default React.memo(
 > });
 > ```
 
-## 5.1 Import
+## 6.1 Import
 ```javascript
 import React, { useReducer } from "react";
 ```
 
-## 5.2 dispatch
+## 6.2 dispatch
 - `reducer` 함수를 실행 시킨다.
 - `action` 객체를 인자로 받으며 `action` 객체는 어떤 행동인지를 나타내는 type 속성과 해당 행동과 관련된 데이터(payload)를 담고 있다. (action 객체의 형태는 자유)
 - `action`을 이용하여 컴포넌트 내에서 state의 업데이트를 일으킨다. (업데이트를 위한 정보를 가지고 있음)
@@ -380,7 +383,7 @@ import React, { useReducer } from "react";
     <button onClick={() => dispatch({ type: "INCREMENT", payload: 1, id : 0, text : "useReducer" })}>증가</button>
     ```
 
-## 5.3 reducer 
+## 6.3 reducer 
 - dispatch 함수에 의해 실행되며, 컴포넌트 외부에서 state를 업데이트 하는 로직을 담당 한다.
 - 함수의 인자로는 state와 `action`을 받게 된다.
 - state와 action을 활용하여 새로운 state를 반환 한다.
@@ -411,7 +414,7 @@ import React, { useReducer } from "react";
   }
   ```
 
-# 6. Custom Hook
+# 7. Custom Hook
 > Custom Hook의 등장
 >1. 컴포넌트 사이에서 상태로직을 재사용하기 어렵다.
 >  - Render Props와 HOC 같은 패턴은 코드의 파악이 어렵다
@@ -422,15 +425,15 @@ import React, { useReducer } from "react";
 >3. 복잡한 컴포넌트들은 이해하기가 어렵다
 >  - 생명주기 class 메서드가 관련이 없는 로직들은 모아놓고, 관련이 있는 로직들은 여러개의 메서드에 나누어 놓는 경우가 자주 있었다.
 
-## 6.1 Custom Hook이란?
+## 7.1 Custom Hook이란?
   - `useState`와 `useEffect`들과 같이, <br>
      특정 상태관리나 라이프사이클 로직들을 추상화하여 묶어서 재사용이 가능하도록 제작이 가능한 함수
   - 즉, 특정 상태와 관련된 로직을 `useState`으로 정의하고, 이 state을 변경시킬 함수들을 객체로 담아 리턴하여 캡슐화한다
-## 6.2 Custom Hook 사용 이유
+## 7.2 Custom Hook 사용 이유
   - 코드, 로직의 간결해지고 가독성이 좋아진다
   - 필요없는 반복을 줄이고 재사용성을 높인다
   - 수정사항이 있을 시 커스텀 훅에서만 수정하면 되기 때문에 유지보수에 용이하다
-## 6.3 Custom Hook 작성시 주의사항
+## 7.3 Custom Hook 작성시 주의사항
   - 리액트 내장훅과 마찬가지로 **커스텀 훅의 이름은 use로 시작**
 
 
