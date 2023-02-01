@@ -437,12 +437,15 @@ import React, { useReducer } from "react";
   - 리액트 내장훅과 마찬가지로 **커스텀 훅의 이름은 use로 시작**
   
 # 8. Context API
+## 8.1 Context란?
 - 리액트에서 Props와 State는 부모 컴포넌트와 자식 컴포넌트 또는 한 컴포넌트 안에서 데이터를 다루기 위해 사용한다.
 - Props와 State를 사용하게 되면 부모 컴포넌트에서 자식 컴포넌트 즉, 위에서 아래 한쪽으로 데이터가 흐르게 되는데,<br>
   만약 다른 컴포넌트에서 한쪽으로 흐르고 있는 데이터를 사용하고 싶은 경우 혹은 다른 컴포넌트에서 사용하고 있는 데이터를 현재의 데이터 흐름에 넣고 싶은 경우에<br>
   사용하고 싶은 데이터와 이 데이터를 사용할 컴포넌트의 공통 부모 컴포넌트에 State를 만들고 사용하고자 하는 데이터를 Props를 전달하면 된다.<br>
 - 하지만 이처럼 컴포넌트 사이에 공유되는 데이터를 위해 매번 공통 부모 컴포넌트를 수정하고 하위 모든 컴포넌트에 데이터를 Props로 전달하는 것은 비효율적이다.
 - 이와 같은 문제를 해결하기위해 리액트는 Flux라는 개념을 도입하면서 Context API를 제공했다
+- **리액트 컴포넌트간에 어떠한 값을 공유할수 있게 해주는 기능** <br>
+
 
 > **MVC(Model-View-Controller) Pattern** <br><br>
 > 데이터를 다루는 로직(Controller), 데이터(Model), 사용자 인터페이스(View)를 나누어 어플리케이션을 구현하는 하나의 개발 모델 <br>
@@ -482,11 +485,55 @@ import React, { useReducer } from "react";
 > ***View*** <br>
 > Flux에서의 View는 MVC의 뷰와는 달리 화면을 보여주는것 외에도 Controller의 성격또한 가지고 있다. <br>
 > 특히 최상위 View는 스토어에서 데이터를 가져와 이를 자식 View 로 내려보내주는 역할 <br>
-> 
+
+## 8.2 Props로만 데이터를 전달하면 발생할 수 있는 문제
+- 리액트 애플리케이션에서는 일반적으로 컴포넌트에게 데이터를 전달해주어야 할 때 Props를 통해 전달
+- 깊숙히 위치한 컴포넌트에 데이터를 전달해야 하는 경우에는 여러 컴포넌트를 거쳐 연달아서 Props를 설정해주어야 하기 때문에 불편하고 실수할 가능성이 높음
+```javascript
+function App() {
+  return <GrandParent value="Hello World!" />;
+}
+
+function GrandParent({ value }) {
+  return <Parent value={value} />;
+}
+
+function Parent({ value }) {
+  return <Child value={value} />;
+}
+
+function Child({ value }) {
+  return <GrandChild value={value} />;
+}
+
+function GrandChild({ value }) {
+  return <Message value={value} />;
+}
+
+function Message({ value }) {
+  return <div>Received: {value}</div>;
+}
+```
+- 이러한 코드를 "Props Drilling" 이라고 부른다. 컴포넌트를 한 두개정도 거쳐서 Props를 전달하는거라면 괜찮지만 이렇게 여러개를 거쳐서 전달하게 되면 불편함.
+- `Message` 컴포넌트를 열어서, 이 `value` 값이 어디서 오는건지 파악하려고 한다면 그 상위 컴포넌트로 타고 또 타고 거슬러 올라가야 함
+- 또, `value` 라는 네이밍을 `message` 로 변경을 하고 싶어진다면, 통일성을 맞추기 위해서 또 여러 컴포넌트들을 수정해야함
 
 
+## 8.3 Context 사용법
+- Context 는 리액트 패키지에서 `createContext` 라는 함수를 불러와서 만들 수 있다.
+```javascript
+import { createContext } from 'react';
 
-
+const UserDispatch = createContext(null);
+```
+- `createContext`의 파라미터에는 Context 의 기본값을 설정할 수 있다.
+- 여기서 설정하는 값은 Context 를 쓸 때 값을 따로 지정하지 않을 경우 사용되는 기본 값
+- Context 를 만들면, Context 안에 Provider 라는 컴포넌트가 들어있는데 이 컴포넌트를 통하여 Context 의 값을 정할 수 있다.
+- 이 컴포넌트를 사용할 때, value 라는 값을 설정
+```javascript
+<UserDispatch.Provider value={dispatch}>...</UserDispatch.Provider>
+```
+- Provider 에 의하여 감싸진 컴포넌트 중 어디서든지 Context 의 값을 다른 곳에서 바로 조회해서 사용 할 수 있다.
 
 
 
