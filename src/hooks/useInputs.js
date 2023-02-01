@@ -42,9 +42,9 @@ function useInputs(initialForm) {
     const { name, value } = e.target;
     dispath({ type: "CHANGE", name, value });
   }, []);
-  const reset = useCallback(() => dispath({ type: "RESET" }), []);
+  const onReset = useCallback(() => dispath({ type: "RESET" }), []);
 
-  return [form, onChange, reset];
+  return [form, onChange, onReset];
 }
 
 export default useInputs;
