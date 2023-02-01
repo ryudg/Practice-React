@@ -435,3 +435,58 @@ import React, { useReducer } from "react";
   - 수정사항이 있을 시 커스텀 훅에서만 수정하면 되기 때문에 유지보수에 용이하다
 ## 7.3 Custom Hook 작성시 주의사항
   - 리액트 내장훅과 마찬가지로 **커스텀 훅의 이름은 use로 시작**
+  
+# 8. Context API
+- 리액트에서 Props와 State는 부모 컴포넌트와 자식 컴포넌트 또는 한 컴포넌트 안에서 데이터를 다루기 위해 사용한다.
+- Props와 State를 사용하게 되면 부모 컴포넌트에서 자식 컴포넌트 즉, 위에서 아래 한쪽으로 데이터가 흐르게 되는데,<br>
+  만약 다른 컴포넌트에서 한쪽으로 흐르고 있는 데이터를 사용하고 싶은 경우 혹은 다른 컴포넌트에서 사용하고 있는 데이터를 현재의 데이터 흐름에 넣고 싶은 경우에<br>
+  사용하고 싶은 데이터와 이 데이터를 사용할 컴포넌트의 공통 부모 컴포넌트에 State를 만들고 사용하고자 하는 데이터를 Props를 전달하면 된다.<br>
+- 하지만 이처럼 컴포넌트 사이에 공유되는 데이터를 위해 매번 공통 부모 컴포넌트를 수정하고 하위 모든 컴포넌트에 데이터를 Props로 전달하는 것은 비효율적이다.
+- 이와 같은 문제를 해결하기위해 리액트는 Flux라는 개념을 도입하면서 Context API를 제공했다
+
+> **MVC(Model-View-Controller) Pattern** <br><br>
+> 데이터를 다루는 로직(Controller), 데이터(Model), 사용자 인터페이스(View)를 나누어 어플리케이션을 구현하는 하나의 개발 모델 <br>
+> ![images_huurray_post_e9c6c83c-f701-43b0-87b1-f1ca59736b56_simple_mvc](https://user-images.githubusercontent.com/103430498/215942237-63c4d967-8562-4f4a-af04-dda1ab646ffd.png) <br>
+> Controller는 Model의 데이터를 조회하거나 업데이트하는 역할을 하며, Model의 변화는 View에 반영된다. 그리고 사용자가 뷰를 통해 데이터를 입력하면, 모델에 영향을 주면서 데이터를 관리하게 된다. <br>
+> MVC 구조는 앱이 커지면서 굉장히 복잡해지고 View가 다양한 상호작용을 위해 여러개의 Model을 동시에 업데이트하는 상황이 나타면(많은 의존성을 가지게 되면) 예측불가능한 상황이 많이 나온다. <br>
+> ![images_huurray_post_171ca365-368e-4c03-aaa2-97562eaf8e35_complex_mvc](https://user-images.githubusercontent.com/103430498/215942623-9cc2af67-ef49-4de3-9077-777285d76b85.png)
+
+
+> **Flux Pattern** <br><br>
+> MVC의 문제를 해결할 목적으로 고안한 애플리케이션 아키텍쳐 <br>
+> 큰 특징은 단방향 데이터 흐름(Unidirectional data flow).
+> 데이터 흐름은 Dispatcher => Store => View 로 흘러가며 뷰에서 입력되는 데이터가 발생하면 Action을 이용해 디스패처로 향함 <br>
+> 데이터를 직접 수정할 수 없고 반드시 액션을 통해서만 수정이 일어나기 때문에 교통정리가 가능
+> ![images_huurray_post_258b2187-866f-4cf8-b207-1ffec24bf55e_다운로드 (1)](https://user-images.githubusercontent.com/103430498/215942739-c5dbe88a-48c8-4202-84ba-6518eb7fa006.png) <br>
+> ***Action*** <br>
+> Action Creater Method, View에서의 사용자 상호작용에서 발생 <br>
+> 첫 흐름을 발생시키는 요소이며 Dispatcher에게 해당 액션 메시지를 보내준다. <br>
+> 타입(type)과 데이터(payload)를 가지고 있다. <br>
+> ```javascript
+> {
+>   type: "EVENT_TYPE",
+>   data: {
+>     "name": "Huurray"
+>   }
+> }
+> ```
+> ***Dispatcher*** <br>
+> Flux의 모든 데이터 흐름을 관리하는 중앙허브. <br>
+> Store들이 등록해놓은 Action Type에 대한 맞춤 Callback이 있다. <br>
+> Action이 넘어오면 Store들이 타입에 맞는 Store의 Callback을 실행하도록 해줌 <br>
+> ***Store*** <br>
+> Store는 데이터와 데이터를 가공하는 로직을 가지고 있다 <br>
+> Dispatcher에 자신을 등록하고 Callback을 제공 <br>
+> Action이 넘어오면 등록된 Callback을 활용해 타입에 맞는 로직을 실행하고 데이터를 업데이트 <br>
+> Store는 변경된 데이터를 View에게 알려주고 자신의 컴포넌트 트리에 속해 있는 자식 노드 모두를 다시 랜더링하게함<br>
+> ***View*** <br>
+> Flux에서의 View는 MVC의 뷰와는 달리 화면을 보여주는것 외에도 Controller의 성격또한 가지고 있다. <br>
+> 특히 최상위 View는 스토어에서 데이터를 가져와 이를 자식 View 로 내려보내주는 역할 <br>
+> 
+
+
+
+
+
+
+
