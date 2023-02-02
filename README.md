@@ -639,5 +639,69 @@ console.log(nextState);
 // { number: 2, dontChangeMe: 2 }
 ```
 ##### 9.3.1.1.3 Using immer
+- immer 사용 전
+```javascript
+case "CREATE_USER":
+  return {
+    users: state.users.concat(action.user),
+  };
+case "TOGGLE_USER":
+  return {
+   ...state,
+   users: state.users.map((user) =>
+     user.id === action.id ? { ...user, active: !user.active } : user
+   ),
+  };
+```
+- immer 사용 후
+```javascript
+case "CREATE_USER":
+  return produce(state, (draft) => {
+    draft.users.push(action.user);
+  });
+case "TOGGLE_USER":
+  return produce(state, (draft) => {
+    const user = draft.users.find((user) => user.id === action.id);
+    user.active = !user.active;
+  });
+```
+- `TOGGLE_USER` 액션의 경우 immer를 사용해서 간결해졌지만 `CREATE_USER` 오히려 더 복잡하다.
+- 상황에 맞춰 사용
+##### 9.3.1.1.4 immer 함수형 업데이트
+```javascript
+const [todo, setTodo] = useState({
+  text: 'Hello',
+  done: false
+});
+
+const onClick = useCallback(() => {
+  setTodo(todo => ({
+    ...todo,
+    done: !todo.done
+  }));
+}, []);
+```
+- `setTodo` 함수에 업데이트를 해주는 함수를 넣음으로써, <br> 
+만약 `useCallback` 을 사용하는 경우 두번째 파라미터인 deps 배열에 `todo` 를 넣지 않아도됨
+
+- `produce` 함수에 두개의 파라미터를 넣게 되면 첫번째 파라미터에 넣은 상태를 불변성을 유지하면서 새로운 상태를 만들어 주지만
+- 첫번째 파라미터를 생략하고 바로 업데이트 함수를 넣어주게 되면 반환 값은 새로운 상태가 아닌 상태를 업데이트 하는 함수가 됨
+- 즉, `produce`가 반환하는 것이 업데이트 함수가 되기 때문에 `useState`의 업데이트 함수를 사용할 때 아래와 같이 구현 가능하다.
+```javascript
+const [todo, setTodo] = useState({
+  text: 'Hello',
+  done: false
+});
+
+const onClick = useCallback(() => {
+  setTodo(
+    produce(draft => {
+      draft.done = !draft.done;
+    })
+  );
+}, []);
+```
+
+
 
 
