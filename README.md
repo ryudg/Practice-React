@@ -889,12 +889,20 @@ export default App
 import React, { Component } from "react"
 
 class App extends Component {
+  static defaultProps = {
+    name: "이름 없음"
+  }
   render() {
     const {number, testName} = this.props;
     const title = "클래스형 컴포넌트";
     return <div>{testName}의 나이는 {number}살 입니다.</div>
   }
 }
+
+// static 키워드와 함께 클래스 내부에 선언 가능
+// App.defaultProps = {
+//   name: "이름 없음"
+// }
 
 export default App
 ```
