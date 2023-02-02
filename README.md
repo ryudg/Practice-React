@@ -39,6 +39,10 @@ UI(엘리먼트)에 반영하기 위해 유지해야할 값 묶음<br>
 - `useState`는 컴포넌트에서 `state`값을 추가할때 사용된다.<br>
 함수형 컴포넌트에서는 클래스형 컴포넌트처럼 `state`를 사용할 수 없어, Hook을 사용해 `state`와 같은 기능을 할 수 있도록 만듬
 - 하나의 `useState`는 하나의 상태 값만 관리를 할 수 있어 만약에 컴포넌트에서 관리해야 할 상태가 여러 개라면 `useState`를 여러번 사용해야 한다
+- 상태 유지 값과 그 값을 갱신하는 함수를 반환
+- 최초로 렌더링을 하는 동안, 반환된 state(state)는 첫 번째 전달된 인자(initialState)의 값과 같다
+- setState 함수는 state를 갱신할 때 사용. 새 state 값을 받아 컴포넌트 리렌더링을 큐에 등록
+- 
 ## 2.1 import
 ```javascript
 import React, { useState } from 'react';
@@ -68,7 +72,13 @@ const [inputs, setInputs] = useState({
   - 특정 DOM 선택
   - 컴포넌트 안의 변수 생성
   - Rerendering 방지
- 
+
+- 시점
+  - useRef는 .current 프로퍼티로 전달된 인자(initialValue)로 초기화된 변경 가능한 ref 객체를 반환. 반환된 객체는 컴포넌트의 전 생애주기를 통해 유지됨
+- 사용이유
+  - 만약 React가 DOM 노드에 ref를 attach하거나 detach할 때 어떤 코드를 실행하고 싶다면 대신 콜백 ref를 사용
+
+
 ## 3.1 import
 ```javascript
 import React, { useRef } from 'react';
@@ -173,7 +183,18 @@ const onCreate = () => {
 - 컴포넌트가 렌더링 될 때 특정 작업을 실행할 수 있도록 하는 Hook
 - `useEffect`는 컴포넌트가 mount, unmount, update 됐을 때 특정 작업을 처리할 수 있다.<br>
  즉, 클래스형 컴포넌트에서 사용할 수 있던 **생명주기** 메소드를 함수형 컴포넌트에서도 사용할 수 있게 된 것.
- 
+- 시점
+  - 기본적으로 동작은 브라우저의 모든 렌더링이 완료된 후에 수행되지만, 어떤 값이 변경되었을 때만 실행되게 할 수도 있습니다
+  - 브라우저가 화며을 그리기 이전 시점에 동기적으로 시행하려면 **useLayoutEffect**를 사용
+- 사용 이유
+  - useEffect는 함수 컴포넌트 내에서 side effects 를 수행할 수 있게 해준다. 
+  - Class컴포넌트에서 사용하는 componentDidMount 나 componentDidUpdate, componentWillUnmount와 같은 목적으로 제공되지만, <br>
+    하나의 API로 통합된 것 
+> **side Effects** 란? <br>
+> React 컴포넌트 안에서 데이터를 가져오거나 구독하고, DOM을 직접 조작하는 작업을 “side effects”(또는 짧게 “effects”)라고한다. <br>
+> 왜냐하면 이것은 다른 컴포넌트에 영향을 줄 수도 있고, 렌더링 과정에서는 구현할 수 없는 작업이기 때문. <br>
+
+
  **Mount** - DOM이 생성되고 웹 브라우저상에 나타나는 것을 Mount 라고한다.<br>
 > - props 로 받은 값을 컴포넌트의 로컬 상태로 설정<br>
 > - 외부 API 요청 (REST API 등)<br>
@@ -217,11 +238,17 @@ import React, { useMemo, useCallback } from 'react';
 > 첫번째 파라미터에는 어떤 연산을 할지 함수를 정의<br>
 > 두번째에는 useEffect와 마찬가지로 의존값들을 넣어주면 되는데, 이 배열 안에 넣은 내용이 변경되면 등록한 함수를 호출해서 값을 연산<br>
 > 만약 빈 배열을 넣는다면 useEffect와 마찬가지로 마운트 될 때에만 값을 계산하고 그 이후론 계속 Memoization된 값을 꺼내와 사용
+> 메모이제이션된 값을 반환
 
 - `useMemo`는 성능 최적화를 위하여 연산된 값을 재사용하는 기능을 가진 함수
 - `useMemo`에서 Memo는 Memoization을 뜻함
   - Memoization이란 기존에 수행한 연산의 결과값을 어딘가에 저장해두고 동일한 입력이 들어오면 재활용하는 프로그래밍 기법
   - Memoization을 절적히 적용하면 중복 연산을 피할 수 있기 때문에 메모리를 조금 더 쓰더라도 애플리케이션의 성능을 최적화할 수 있다.
+
+- 시점
+  - 생성함수와 그것의 의존성 값의 배열을 전달해야함. useMemo는 의존성이 변경되었을 때에만 메모이제이션된 값만 다시 계산.
+- 사용이유
+  - 모든 렌더링 시의 고비용 계산을 방지. (성능 최적화)
 
 - 활성 사용자 수 세기
 ```javascript
@@ -251,9 +278,15 @@ const count = useMemo(() => countActiveUsers(users), [users]);
 ## 5.3 useCallback()
 > 기본형 `const memoizedCallback = useCallback(() =>, [ deps ]);`
 
-- `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수. <br>
+- `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수.(메모이제이션된 콜백을 반환) <br>
 - `useCallback`은 첫 번째 인자로 넘어온 함수를, 두 번째 인자로 넘어온 배열 형태의 함수 실행 조건의 값이 변경될 때까지 저장해놓고 재사용할 수 있게 해줌.
 > 컴포넌트 안에 함수가 선언되어있을 때 이 함수는 해당 컴포넌트가 렌더링 될 때마다 새로운 함수가 생성되는데, `useCallback`을 사용하면 해당 컴포넌트가 렌더링 되더라도 그 함수가 의존하는 값(deps)들이 바뀌지 않는 한 기존 함수를 재사용할 수 있다.
+
+- 시점
+  - 메모이제이션된 버전은 콜백의 의존성이 변경되었을 때에만 변경
+- 사용이유
+  - 불필요한 렌더링을 방지하기 위해 (예로 shouldComponentUpdate를 사용하여) 참조의 동일성에 의존적인 최적화된 자식 컴포넌트에 콜백을 전달할 때 유용. (성능 최적화)
+  - useCallback(fn, deps)은 useMemo(() => fn, deps)와 같다.
 
 - `onChange`,`onCreate`, `onRemove`, `onToggle`은 컴포넌트가 리렌더링 될 때 마다 새로 만듬
   - props 가 바뀌지 않았으면 Virtual DOM 에 새로 렌더링하는 것 조차 하지 않고 컴포넌트의 결과물을 재사용 하는 최적화 작업을 위해서는 함수를 재사용하는 것이 필수
@@ -345,6 +378,8 @@ export default React.memo(
 - 한 컴포넌트 내에서 state를 업데이트하는 로직 부분을 그 컴포넌트로부터 분리시키는 것을 가능
 - `seReducer`는 state 업데이트 로직을 분리하여 컴포넌트의 외부에 작성하는 것을 가능하게 함으로써, 코드의 최적화
   - state 업데이트 로직을 또다른 파일에 작성해서 (분리), 분리된 파일을 불러와서 사용하는 것도 가능
+- 다수의 하윗값을 포함하는 복잡한 정적 로직을 만드는 경우나 다음 state가 이전 state에 의존적인 경우에 보통 useState보다 useReducer를 선호.
+- 또한 useReducer는 자세한 업데이트를 트리거 하는 컴포넌트의 성능을 최적화할 수 있게 하는데, 이것은 콜백 대신 dispatch를 전달 할 수 있기 때문입니다.
 
 > **useState** vs **useReducer**
 >- useState
@@ -427,6 +462,9 @@ import React, { useReducer } from "react";
 >  - 생명주기 class 메서드가 관련이 없는 로직들은 모아놓고, 관련이 있는 로직들은 여러개의 메서드에 나누어 놓는 경우가 자주 있었다.
 
 ## 7.1 Custom Hook이란?
+  - 상태 관련 로직을 컴포넌트 간에 재사용 문제를 해결하기 위한 전통적인 방법이 두 가지 있었는데, <br>
+     higher-order components와 render props가 바로 그것
+  - Custom Hook은 이들 둘과는 달리 컴포넌트 트리에 새 컴포넌트를 추가하지 않고도 이것을 가능하게 해줌
   - `useState`와 `useEffect`들과 같이, <br>
      특정 상태관리나 라이프사이클 로직들을 추상화하여 묶어서 재사용이 가능하도록 제작이 가능한 함수
   - 즉, 특정 상태와 관련된 로직을 `useState`으로 정의하고, 이 state을 변경시킬 함수들을 객체로 담아 리턴하여 캡슐화한다
@@ -535,6 +573,14 @@ const UserDispatch = createContext(null);
 <UserDispatch.Provider value={dispatch}>...</UserDispatch.Provider>
 ```
 - Provider 에 의하여 감싸진 컴포넌트 중 어디서든지 Context 의 값을 다른 곳에서 바로 조회해서 사용 할 수 있다.
+
+## 8.4 useContext
+- context 객체(React.createContext에서 반환된 값)을 받아 그 context의 현재 값을 반환합니다
+- 컴포넌트에서 가장 가까운 <MyContext.Provider>가 갱신되면 이 Hook은 그 MyContext provider에게 전달된 가장 최신의 context value를 사용하여 렌더러를 트리거 합니다. 
+- 상위 컴포넌트에서 React.memo 또는 shouldComponentUpdate를 사용하더라도 useContext를 사용하고 있는 컴포넌트 자체에서부터 다시 렌더링됩니다.
+```javascript
+const value = useContext(Mycontext);
+```
 
 # 9. 불변성 관리
 - 불변성이 프로그래밍에서 주목받는 이유는 변경 가능한 상태를 여러 곳에서 공유하게 됨으로써 발생하는 여러 가지 문제를 해결하기 위함.
