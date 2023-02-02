@@ -610,7 +610,8 @@ const baz = {
   - 성능 저하
   - 리액트에서 변경되지 않은 객체도 변경되었다고 감지하여 모든 것을 리렌더링을 하는 문제가 발생할 수 있다.
 
-#### 9.3.1.1 immer.js
+#### 9.3.1.1 immer.js 
+<img src="https://img.shields.io/badge/Immer-00E7C3?style=flat&logo=Immer&logoColor=white" />
 - 변경된 객체만 복사하여 성능을 향상시킬 수 있다.
 ##### 9.3.1.1.1 Install
 ```bash
@@ -638,6 +639,6 @@ const nextState = produce(state, draft => {
 console.log(nextState);
 // { number: 2, dontChangeMe: 2 }
 ```
-
+##### 9.3.1.1.3 Using immer
 
 
