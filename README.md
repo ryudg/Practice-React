@@ -734,10 +734,10 @@ const onClick = useCallback(() => {
 
 
 
-## 10.2 선언 방식
+## 10.2 차이 : 선언 방식
 > 클래스형 컴포넌트와 함수형 컴포넌트의 역할은 동일
 
-- 클래스형 컴포넌트
+###  클래스형 컴포넌트
 ```javascript
 import React, { Component } from "react"
 
@@ -757,7 +757,7 @@ export default App
 5. 함수형보다 메모리 자원을 더 사용한다.
 6. 임의 메소드를 정의할 수 있다.
 
-- 함수형 컴포넌트
+### 함수형 컴포넌트
 ```javascript
 import React from "react"
 
@@ -771,3 +771,292 @@ export default App
 1. state, lifeCycle 관련 기능사용 불가능하다. (Hook을 통해 해결)
 2. 클래스형보다 메모지 자원을 덜 사용한다.
 3. 컴포넌트 선언이 편하다.
+
+> es6 화살표 함수와 일반 function() 함수의 차이 : <br>
+> 일반 함수(function())는 자신이 종속된 객체를 this로 가리키며, 화살표 함수(() => {})는 자신이 종속된 인스턴스를 가리킨다.
+
+## 10.3 차이 : state
+### 클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      test1: [],
+      test2: "",
+      number: 1
+    }
+  }
+  testFunction = () => {
+    this.setState({ number : number +1 })
+  }
+  render() {
+    const name = "클래스형 컴포넌트"
+    return <div>{name}</div>
+  }
+}
+
+export default App
+```
+
+1. constructor 안에서 this.state 초기 값 설정 가능
+2. counstructor 없이도 바로 state 초기값을 설정 가능
+3. this.setState() 를 통해 state값을 변경
+4. 클래스형의 state는 객체형식
+
+### 함수형 컴포넌트
+```javascript
+import React, { useState } from "react"
+
+const App = () => {
+  const [test1, setTest1] = useState([])
+  const [test2, setTest2] = useState("")
+  const [number, setNumber] = useState(0)
+  
+  const testFunctiond = () => {
+    setNumber(number +1)
+  }
+  
+  const name = "함수형 컴포넌트"
+  return <div>{name}</div>
+}
+
+export default App
+```
+1. useState 함수로 state를 사용한다.
+2. useState 함수를 호출하면 배열이 반환되는데 첫 번째 원소는 현재 상태, 두번째 원소는 상태를 바꿔주는 함수이다.
+
+
+## 10.4 차이 : props
+
+> **Props 란?**
+> - 컴포넌트의 속성을 설정
+> - 읽기 전용 (컴포넌트 자체 props를 수정하면 안된다.)
+> - 모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 순수 함수처럼 동작해야한다.
+> - 수정되는 값은 state 이다.
+
+### 클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+  render() {
+    const {number, testName} = this.props;
+    const title = "클래스형 컴포넌트";
+    return <div>{testName}의 나이는 {number}살 입니다.</div>
+  }
+}
+
+export default App
+```
+
+1. this.props로 통해 값을 불러올 수 있다.
+
+### 함수형 컴포넌트
+```javascript
+import React, { useState } from "react"
+
+const App = ({ number, testName }) => {
+  const title = "함수형  컴포넌트"
+  
+  return <div>{testName}의 나이는 {number}살 입니다.</div>
+}
+```
+
+1. props를 불러올 필요 없이 바로 호출 할 수 있다.
+
+## 10.5 차이 : 이벤트 핸들링
+
+### 클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      number: 1
+    }
+  }
+  onClickFunc = () => {
+    this.setState({ number : number +1 })
+  }
+  render() {
+    const title = "클래스형 컴포넌트"
+    return (
+      <div>
+        <button onClick={ this.onClickFunc }>++1</button>
+      </div>
+    )
+  }
+}
+
+export default
+```
+1. 함수 선언시 화살표 함수로 바로 선언 가능하다.
+2. 요소에 적용할때 this.를 붙여줘야한다.
+
+### 함수형 컴포넌트
+```javascript
+import React, { useState } from "react"
+
+const App = ({ number, testName }) => {
+  const [number, setNumber] = useState("")
+  
+  const onClickFunc = () => {
+    setNumber(number + 1)
+  }
+  const title = "함수형  컴포넌트"
+  
+  return (
+    <div>
+      <button onClick={ this.onClickFunc }>++1</button>
+    </div>
+  )
+}
+```
+1. const + 함수 형태로 선언해야 한다.
+2. 요소에 적용할때 this가 필요없다.
+
+## 10.6 차이 : Life Cycle
+> **Life Cycle이란?** <br>
+> React에서 컴포넌트는 여러 종류의 "생명주기 메소드" 를 가지며 이 메소드를 오버라이딩(상속하여 재정의) 하여 특정 시점에 코드가 실행되도록 설정 <br>
+> 클래스 컴포넌트에만 해당되는 내용이며, 함수형 컴포넌트는 Hook를 사용하여 생명주기에 원하는 동작
+
+### 클래스형 컴포넌트
+
+![img1 daumcdn](https://user-images.githubusercontent.com/103430498/216218146-6af55aac-fe1c-4fc6-a9be-96bd77fd2e1d.png)
+
+#### Mounting (생성 될 때)
+> 컴포넌트가 인스턴스로 생성되고 DOM 트리에 삽입되어 브라우저상에 나타나는 과정
+##### constructor
+-시점
+  - 브라우저상에 나타날때 가장 처음 실행되는 함수
+- 사용이유 
+  - 생성자 메서드로 this.state의 초기값 설정, 인스턴스에 이벤트 처리 메서드를 바인딩하기 위해 사용한다.
+  - super(props)를 첫 줄에 필수로 사용한다.
+```javascript
+constructor(props) {
+  super(props)
+  this.state = {
+    number: 1
+  }
+}
+```
+##### static getDerivedStateFromProps
+- 시점
+  - 컴포넌트가 처음 렌더링 되기 전에도 호출 되고 그 이후 리렌더링 되기 전에도 매번 실행됩니다
+- 사용이유
+  - props로 받은 값을 state에다가 넣고 싶을때 사용 (거의 쓰지 않는 함수.)
+```javascript
+static getDerivedStateFromProps(nextProps, prevState) {
+  if (preveState.value !== nextState.value) {
+    return {
+      value: nextState.value
+    }
+  }
+  // 변경 사항이 없거나 아무것도 안할때
+  return null
+}
+```
+##### render
+- 컴포넌트를 렌더링하는 메서드
+
+##### componentDidMount
+- 시점
+  - 컴포넌트가 생성된 직후, 트리에 삽입된 직후에 호출.
+  - 이 메서드가 호출되는 시점에는 만든 컴포넌트가 화면에 나타난 상태
+- 사용이유
+  - 외부 라이브러리를 사용하여 특정 DOM에다가 차트를 그릴때,
+  - 컴포넌트에서 필요로하는 데이터 요청, DOM의 속성을 읽거나 직접 변경하는 작업을 할 때 등
+
+#### Updating (업데이트 할 때) 
+> 컴포넌트 props 또는 state가 바뀌었을 때
+
+##### static getDerivedStateFromProps
+- Mounting 에서 등장한 메서드로 업데이트에서도 호출
+
+##### shouldComponentUpdate
+- 시점
+  - props 또는 state가 새로운 값으로 갱신되어 렌더링이 발생하기 직전에 호출
+
+- 사용이유
+  - 성능최적화를 위해 사용한다. 컴포넌트가 리렌더링을 할지 말지 결정하는 메소드이다. <br>
+     (함수형 컴포넌트에선 useMemo()가 같은 역할을 한다.)
+  - 리액트 공식 홈페이지에서는 이 메소드 대신 PureComponent를 사용하는 것이 좋다고 한다.
+```javascript
+shouldComponentUpdate(nextProps, nextState) {
+  return this.props.value !== netxProps.value
+}
+```
+
+##### render
+- Mounting 에서 등장한 메서드로 업데이트에서도 호출됩니다.
+
+##### getSnapshotBeforeUpdate
+
+- 시점
+  - render 메서드 호출 후 브라우저에 나타나기 바로 직전에 호출되는 메서드이다. <br>
+    (render() -> getSnapshotBeforeUpdate -> DOM에 변화 반영 -> componentDidUpdate)
+
+- 사용이유
+  - 브라우저에 그리기 전에 스크롤의 위치, DOM의 크기를 사전에 알고 싶을 때,
+  - 업데이트 되기 직전에 DOM 함수를 return 시켜가지고 그 return된 값을 componentDidUpdate에서 받을 수 있다
+  - 이 메소드는 사용할 일이 별로 없지만 Hook에서 대체할 수 있는 기능이 아직 없음
+
+##### componentDidUpdate
+- 시점
+  - 리렌더링을 완료한 후 실행되는 메서드이다. 화면에 우리가 원하는 변화가 모두 반영되고 난 뒤 호출
+- 사용이유
+  - 컴포넌트가 업데이트 되었을 시에 DOM을 조작하기 위해 사용하거나
+  - 이전과 현재의 props를 비교하여 네트워크 요청을 보내는 작업을 할 때 유용
+
+#### Unmounting (제거 할 때)
+> 컴포넌트가 브라우저상에서 사라질때
+
+##### componentWillUnmount
+
+- 시점
+  - 컴포넌트가 브라우저상에서 사라질때
+- 사용이유
+  - 주로 DOM에 직접 등록했었던 이벤트를 제거하거나
+  - setTimeout이 있다면 타이머를 제거, 외부 라이브러리 인스턴스를 제거하기 위해 사용
+
+#### 컴포넌트 에러가 발생했을때
+
+##### componentDidCatch
+- 시점 :
+  - render 함수에서 에러가 날 때, 에러가 발생할 수 있는 컴포넌트의 부모 컴포넌트에서 작업해야한다.
+- 사용이유 : 
+  - 사용자에게는 에러 화면을 보여주고 , 개발자들은 이때 에러 내용을 서버로 전달할 때 사용.
+
+```javascript
+class App extends Component {
+  state = {
+    error: false
+  }
+  
+  componentDidCatch(error, info) {
+    this.setState({
+      error: true
+    })
+  }
+  render() {
+    if(this.state.error) {
+      return <p>ERROR</p>
+    }
+    return <p>Not ERROR</p>
+  }
+}
+
+export default App
+```
+
+
+
+
+
+
+
