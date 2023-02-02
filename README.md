@@ -982,7 +982,7 @@ const App = ({ number, testName }) => {
 
 ### 클래스형 컴포넌트
 
-![img1 daumcdn](https://user-images.githubusercontent.com/103430498/216218146-6af55aac-fe1c-4fc6-a9be-96bd77fd2e1d.png)
+![cNfpEph](https://user-images.githubusercontent.com/103430498/216228006-4667f6a6-f7eb-455f-ab56-4862347fe68a.png)
 
 #### Mounting (생성 될 때)
 > 컴포넌트가 인스턴스로 생성되고 DOM 트리에 삽입되어 브라우저상에 나타나는 과정
