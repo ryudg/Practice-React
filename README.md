@@ -31,6 +31,7 @@ UI(엘리먼트)에 반영하기 위해 유지해야할 값 묶음<br>
 > **Hook의 원칙**
 > - 최상위 레벨 에서만 Hook을 호출한다. (반복문이나 조건문 코드블랙 내에서 Hook을 호출하면 안됨)
 > - 일반 javascript 함수 스코프 내에서 호출하지 않는다 (오직 React 함수 내에서 Hook을 호출한다.)
+> - custom Hook 내에서는 호출 가능하다.
 
 # 2. useState()
 > 기본형 `const [state, setState] = useState(초기값);`
@@ -932,7 +933,7 @@ const App = ({ number, testName }) => {
 #### Mounting (생성 될 때)
 > 컴포넌트가 인스턴스로 생성되고 DOM 트리에 삽입되어 브라우저상에 나타나는 과정
 ##### constructor
--시점
+- 시점
   - 브라우저상에 나타날때 가장 처음 실행되는 함수
 - 사용이유 
   - 생성자 메서드로 this.state의 초기값 설정, 인스턴스에 이벤트 처리 메서드를 바인딩하기 위해 사용한다.
