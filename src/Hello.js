@@ -34,7 +34,7 @@ class Hello extends Component {
   }
 }
 
-// static 키워드로 대체 가능
+// 클래스 내부 static 키워드로 선언 가능
 // Hello.defaultProps = {
 //   name: "이름없음",
 // };

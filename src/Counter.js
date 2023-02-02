@@ -77,6 +77,8 @@ class Counter extends Component {
   // };
   // 함수형 업데이트 setState를 여러번에 걸쳐서 해야하는 경우 유용
   // 함수형이 아닌 위의 코드는 setState를 두번 사용하면서 1씩 더할때 실제로 2가 더해지지 않음
+  // 업데이트 할 객체를 넣어주는 setState 에서 2씩 더해지지 않는 이유는 setState 를 한다고 해서 상태가 바로 바뀌는게 아니기 때문
+  // setState 는 단순히 상태를 바꾸는 함수가 아니라 상태로 바꿔달라고 요청해주는 함수로 이해
   handleIncrease = () => {
     // 2씩 더하기
     this.setState((state) => ({
