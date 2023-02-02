@@ -31,6 +31,7 @@ UI(엘리먼트)에 반영하기 위해 유지해야할 값 묶음<br>
 > **Hook의 원칙**
 > - 최상위 레벨 에서만 Hook을 호출한다. (반복문이나 조건문 코드블랙 내에서 Hook을 호출하면 안됨)
 > - 일반 javascript 함수 스코프 내에서 호출하지 않는다 (오직 React 함수 내에서 Hook을 호출한다.)
+> - custom Hook 내에서는 호출 가능하다.
 
 # 2. useState()
 > 기본형 `const [state, setState] = useState(초기값);`
@@ -38,6 +39,10 @@ UI(엘리먼트)에 반영하기 위해 유지해야할 값 묶음<br>
 - `useState`는 컴포넌트에서 `state`값을 추가할때 사용된다.<br>
 함수형 컴포넌트에서는 클래스형 컴포넌트처럼 `state`를 사용할 수 없어, Hook을 사용해 `state`와 같은 기능을 할 수 있도록 만듬
 - 하나의 `useState`는 하나의 상태 값만 관리를 할 수 있어 만약에 컴포넌트에서 관리해야 할 상태가 여러 개라면 `useState`를 여러번 사용해야 한다
+- 상태 유지 값과 그 값을 갱신하는 함수를 반환
+- 최초로 렌더링을 하는 동안, 반환된 state(state)는 첫 번째 전달된 인자(initialState)의 값과 같다
+- setState 함수는 state를 갱신할 때 사용. 새 state 값을 받아 컴포넌트 리렌더링을 큐에 등록
+- 
 ## 2.1 import
 ```javascript
 import React, { useState } from 'react';
@@ -67,7 +72,13 @@ const [inputs, setInputs] = useState({
   - 특정 DOM 선택
   - 컴포넌트 안의 변수 생성
   - Rerendering 방지
- 
+
+- 시점
+  - useRef는 .current 프로퍼티로 전달된 인자(initialValue)로 초기화된 변경 가능한 ref 객체를 반환. 반환된 객체는 컴포넌트의 전 생애주기를 통해 유지됨
+- 사용이유
+  - 만약 React가 DOM 노드에 ref를 attach하거나 detach할 때 어떤 코드를 실행하고 싶다면 대신 콜백 ref를 사용
+
+
 ## 3.1 import
 ```javascript
 import React, { useRef } from 'react';
@@ -172,7 +183,18 @@ const onCreate = () => {
 - 컴포넌트가 렌더링 될 때 특정 작업을 실행할 수 있도록 하는 Hook
 - `useEffect`는 컴포넌트가 mount, unmount, update 됐을 때 특정 작업을 처리할 수 있다.<br>
  즉, 클래스형 컴포넌트에서 사용할 수 있던 **생명주기** 메소드를 함수형 컴포넌트에서도 사용할 수 있게 된 것.
- 
+- 시점
+  - 기본적으로 동작은 브라우저의 모든 렌더링이 완료된 후에 수행되지만, 어떤 값이 변경되었을 때만 실행되게 할 수도 있습니다
+  - 브라우저가 화며을 그리기 이전 시점에 동기적으로 시행하려면 **useLayoutEffect**를 사용
+- 사용 이유
+  - useEffect는 함수 컴포넌트 내에서 side effects 를 수행할 수 있게 해준다. 
+  - Class컴포넌트에서 사용하는 componentDidMount 나 componentDidUpdate, componentWillUnmount와 같은 목적으로 제공되지만, <br>
+    하나의 API로 통합된 것 
+> **side Effects** 란? <br>
+> React 컴포넌트 안에서 데이터를 가져오거나 구독하고, DOM을 직접 조작하는 작업을 “side effects”(또는 짧게 “effects”)라고한다. <br>
+> 왜냐하면 이것은 다른 컴포넌트에 영향을 줄 수도 있고, 렌더링 과정에서는 구현할 수 없는 작업이기 때문. <br>
+
+
  **Mount** - DOM이 생성되고 웹 브라우저상에 나타나는 것을 Mount 라고한다.<br>
 > - props 로 받은 값을 컴포넌트의 로컬 상태로 설정<br>
 > - 외부 API 요청 (REST API 등)<br>
@@ -216,11 +238,17 @@ import React, { useMemo, useCallback } from 'react';
 > 첫번째 파라미터에는 어떤 연산을 할지 함수를 정의<br>
 > 두번째에는 useEffect와 마찬가지로 의존값들을 넣어주면 되는데, 이 배열 안에 넣은 내용이 변경되면 등록한 함수를 호출해서 값을 연산<br>
 > 만약 빈 배열을 넣는다면 useEffect와 마찬가지로 마운트 될 때에만 값을 계산하고 그 이후론 계속 Memoization된 값을 꺼내와 사용
+> 메모이제이션된 값을 반환
 
 - `useMemo`는 성능 최적화를 위하여 연산된 값을 재사용하는 기능을 가진 함수
 - `useMemo`에서 Memo는 Memoization을 뜻함
   - Memoization이란 기존에 수행한 연산의 결과값을 어딘가에 저장해두고 동일한 입력이 들어오면 재활용하는 프로그래밍 기법
   - Memoization을 절적히 적용하면 중복 연산을 피할 수 있기 때문에 메모리를 조금 더 쓰더라도 애플리케이션의 성능을 최적화할 수 있다.
+
+- 시점
+  - 생성함수와 그것의 의존성 값의 배열을 전달해야함. useMemo는 의존성이 변경되었을 때에만 메모이제이션된 값만 다시 계산.
+- 사용이유
+  - 모든 렌더링 시의 고비용 계산을 방지. (성능 최적화)
 
 - 활성 사용자 수 세기
 ```javascript
@@ -250,9 +278,15 @@ const count = useMemo(() => countActiveUsers(users), [users]);
 ## 5.3 useCallback()
 > 기본형 `const memoizedCallback = useCallback(() =>, [ deps ]);`
 
-- `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수. <br>
+- `useCallback`은 `useMemo`와 비슷한 Hook. `useMemo`는 특정 **결괏값**을 재사용할 때 사용하는 반면,  `useCallback`은 **특정 함수**를 새로 만들지 않고 재사용하고 싶을 때 사용하는 함수.(메모이제이션된 콜백을 반환) <br>
 - `useCallback`은 첫 번째 인자로 넘어온 함수를, 두 번째 인자로 넘어온 배열 형태의 함수 실행 조건의 값이 변경될 때까지 저장해놓고 재사용할 수 있게 해줌.
 > 컴포넌트 안에 함수가 선언되어있을 때 이 함수는 해당 컴포넌트가 렌더링 될 때마다 새로운 함수가 생성되는데, `useCallback`을 사용하면 해당 컴포넌트가 렌더링 되더라도 그 함수가 의존하는 값(deps)들이 바뀌지 않는 한 기존 함수를 재사용할 수 있다.
+
+- 시점
+  - 메모이제이션된 버전은 콜백의 의존성이 변경되었을 때에만 변경
+- 사용이유
+  - 불필요한 렌더링을 방지하기 위해 (예로 shouldComponentUpdate를 사용하여) 참조의 동일성에 의존적인 최적화된 자식 컴포넌트에 콜백을 전달할 때 유용. (성능 최적화)
+  - useCallback(fn, deps)은 useMemo(() => fn, deps)와 같다.
 
 - `onChange`,`onCreate`, `onRemove`, `onToggle`은 컴포넌트가 리렌더링 될 때 마다 새로 만듬
   - props 가 바뀌지 않았으면 Virtual DOM 에 새로 렌더링하는 것 조차 하지 않고 컴포넌트의 결과물을 재사용 하는 최적화 작업을 위해서는 함수를 재사용하는 것이 필수
@@ -344,6 +378,8 @@ export default React.memo(
 - 한 컴포넌트 내에서 state를 업데이트하는 로직 부분을 그 컴포넌트로부터 분리시키는 것을 가능
 - `seReducer`는 state 업데이트 로직을 분리하여 컴포넌트의 외부에 작성하는 것을 가능하게 함으로써, 코드의 최적화
   - state 업데이트 로직을 또다른 파일에 작성해서 (분리), 분리된 파일을 불러와서 사용하는 것도 가능
+- 다수의 하윗값을 포함하는 복잡한 정적 로직을 만드는 경우나 다음 state가 이전 state에 의존적인 경우에 보통 useState보다 useReducer를 선호.
+- 또한 useReducer는 자세한 업데이트를 트리거 하는 컴포넌트의 성능을 최적화할 수 있게 하는데, 이것은 콜백 대신 dispatch를 전달 할 수 있기 때문입니다.
 
 > **useState** vs **useReducer**
 >- useState
@@ -426,6 +462,9 @@ import React, { useReducer } from "react";
 >  - 생명주기 class 메서드가 관련이 없는 로직들은 모아놓고, 관련이 있는 로직들은 여러개의 메서드에 나누어 놓는 경우가 자주 있었다.
 
 ## 7.1 Custom Hook이란?
+  - 상태 관련 로직을 컴포넌트 간에 재사용 문제를 해결하기 위한 전통적인 방법이 두 가지 있었는데, <br>
+     higher-order components와 render props가 바로 그것
+  - Custom Hook은 이들 둘과는 달리 컴포넌트 트리에 새 컴포넌트를 추가하지 않고도 이것을 가능하게 해줌
   - `useState`와 `useEffect`들과 같이, <br>
      특정 상태관리나 라이프사이클 로직들을 추상화하여 묶어서 재사용이 가능하도록 제작이 가능한 함수
   - 즉, 특정 상태와 관련된 로직을 `useState`으로 정의하고, 이 state을 변경시킬 함수들을 객체로 담아 리턴하여 캡슐화한다
@@ -535,6 +574,14 @@ const UserDispatch = createContext(null);
 ```
 - Provider 에 의하여 감싸진 컴포넌트 중 어디서든지 Context 의 값을 다른 곳에서 바로 조회해서 사용 할 수 있다.
 
+## 8.4 useContext
+- context 객체(React.createContext에서 반환된 값)을 받아 그 context의 현재 값을 반환합니다
+- 컴포넌트에서 가장 가까운 <MyContext.Provider>가 갱신되면 이 Hook은 그 MyContext provider에게 전달된 가장 최신의 context value를 사용하여 렌더러를 트리거 합니다. 
+- 상위 컴포넌트에서 React.memo 또는 shouldComponentUpdate를 사용하더라도 useContext를 사용하고 있는 컴포넌트 자체에서부터 다시 렌더링됩니다.
+```javascript
+const value = useContext(Mycontext);
+```
+
 # 9. 불변성 관리
 - 불변성이 프로그래밍에서 주목받는 이유는 변경 가능한 상태를 여러 곳에서 공유하게 됨으로써 발생하는 여러 가지 문제를 해결하기 위함.
 
@@ -610,7 +657,7 @@ const baz = {
   - 성능 저하
   - 리액트에서 변경되지 않은 객체도 변경되었다고 감지하여 모든 것을 리렌더링을 하는 문제가 발생할 수 있다.
 
-#### 9.3.1.1 immer.js
+#### 9.3.1.1 immer.js [<img src="https://img.shields.io/badge/Immer-00E7C3?style=flat&logo=Immer&logoColor=white" />](https://immerjs.github.io/immer/)
 - 변경된 객체만 복사하여 성능을 향상시킬 수 있다.
 ##### 9.3.1.1.1 Install
 ```bash
@@ -638,6 +685,433 @@ const nextState = produce(state, draft => {
 console.log(nextState);
 // { number: 2, dontChangeMe: 2 }
 ```
+##### 9.3.1.1.3 Using immer
+- immer 사용 전
+```javascript
+case "CREATE_USER":
+  return {
+    users: state.users.concat(action.user),
+  };
+case "TOGGLE_USER":
+  return {
+   ...state,
+   users: state.users.map((user) =>
+     user.id === action.id ? { ...user, active: !user.active } : user
+   ),
+  };
+```
+- immer 사용 후
+```javascript
+case "CREATE_USER":
+  return produce(state, (draft) => {
+    draft.users.push(action.user);
+  });
+case "TOGGLE_USER":
+  return produce(state, (draft) => {
+    const user = draft.users.find((user) => user.id === action.id);
+    user.active = !user.active;
+  });
+```
+- `TOGGLE_USER` 액션의 경우 immer를 사용해서 간결해졌지만 `CREATE_USER` 오히려 더 복잡하다.
+- 상황에 맞춰 사용
+##### 9.3.1.1.4 immer 함수형 업데이트
+```javascript
+const [todo, setTodo] = useState({
+  text: 'Hello',
+  done: false
+});
+
+const onClick = useCallback(() => {
+  setTodo(todo => ({
+    ...todo,
+    done: !todo.done
+  }));
+}, []);
+```
+- `setTodo` 함수에 업데이트를 해주는 함수를 넣음으로써, <br> 
+만약 `useCallback` 을 사용하는 경우 두번째 파라미터인 deps 배열에 `todo` 를 넣지 않아도됨
+
+- `produce` 함수에 두개의 파라미터를 넣게 되면 첫번째 파라미터에 넣은 상태를 불변성을 유지하면서 새로운 상태를 만들어 주지만
+- 첫번째 파라미터를 생략하고 바로 업데이트 함수를 넣어주게 되면 반환 값은 새로운 상태가 아닌 상태를 업데이트 하는 함수가 됨
+- 즉, `produce`가 반환하는 것이 업데이트 함수가 되기 때문에 `useState`의 업데이트 함수를 사용할 때 아래와 같이 구현 가능하다.
+```javascript
+const [todo, setTodo] = useState({
+  text: 'Hello',
+  done: false
+});
+
+const onClick = useCallback(() => {
+  setTodo(
+    produce(draft => {
+      draft.done = !draft.done;
+    })
+  );
+}, []);
+```
+
+# 10. 클래스형 컴포넌트 vs 함수형 컴포넌트
+> React 컴포넌트를 만들때 클래스형 컴포넌트, 함수형 컴포넌트 2가지 방식이 있다 <br> 
+> 과거에는 클래스형 컴포넌트를 많이 사용했지만 <br>
+> 2019년 v16.8 부터 함수형 컴포넌트에 리액트 훅(hook)을 지원해 주어서  <br>
+> 현재는 공식 문서에서도 함수형 컴포넌트와 훅(hook)을 함께 사용할 것을 권장하고 있다.
+
+>**컴포넌트란?** <br>
+>컴포넌트는 단순한 템플릿 이상의 기능을 수행<br>
+>데이터가 주어졌을 때 이에 맞추어 UI를 만들어 주는 기능을 하는 것은 물론, 라이프 사이클 API를 통해 컴포넌트가 화면에 나타날 때, 사라질 때, 변할 때 작업들을 수행<br>
+>컴포넌트의 목적에 따라 프리젠테이션(presentational) 컴포넌트와 컨테이너(container) 컴포넌트로 나누기도 한다.
+>
+> - 프레젠테이셔널 컴포넌트
+>    - View 만을 담당하는 컴포넌트이다 (UI를 작성한다)
+>    - 이 컴포넌트 안에서는 프레젠테이셔널 컴포넌트와 컨테이너 컴포넌트 둘 다 사용할 수 있다
+>    - 리덕스 스토어에 직접적으로 접근하지 않고 props로만 데이터, 함수를 가져온다
+>    - 순수한 컴포넌트로 state를 사용하지 않으며 state가 있을 경우 데이터가 아닌 UI에 대한 state여야 한다.
+>    - 주로 함수형 컴포넌트로 작성된다
+> - 컨테이너 컴포넌트
+>    - 다른 프레젠테이션 컴포넌트나 컨테이너 컴포넌트를 관리한다
+>    - 내부에 DOM 엘레멘트를 (UI) 작성하지 않는다 (사용하는 경우 감싸는 용도)
+>    - 스타일을 가지고 있지 않는다
+>    - 스타일은 모두 프레젠테이셔널 컴포넌트 내부에 정의되어야 한다
+>    - 상태를 가지고 있고 리덕스에 직접 접근하여 데이터를 가져온다
+>    - dispatch를 하는 함수를 여기서 구현한다
+
+## 10.1 함수형 컴포넌트를 선호하는 이유
+- 클래스형 컴포넌트보다 함수형 컴포넌트+Hook을 사용한다.
+- 클래스형 컴포넌트는 로직과 상태를 컴포넌트 내에서 구현하기 때문에 상대적으로 복잡한 UI 로직을 갖고 있는 반면,
+- 함수형 컴포넌트는 state를 사용하지 않고 단순하게 데이터를 받아서(props) UI에 뿌려준다. Hook들을 필요한 곳에 사용하며 Logic의 재사용이 가능하다는 장점이 있어 함수형 컴포넌트+Hook을 주로 사용한다고 한다.
+
+
+
+## 10.2 차이 : 선언 방식
+> 클래스형 컴포넌트와 함수형 컴포넌트의 역할은 동일
+
+###  클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+ render() {
+  const name = "클래스형 컴포넌트"
+  return <div>{name}</div>
+ }
+}
+
+export default App
+```
+1. class 키워드 필요
+2. Component로 상속을 받아야한다.
+3. render() 메소드가 반드시 필요하다.
+4. state, lifeCycle 관련 기능사용이 가능하다.
+5. 함수형보다 메모리 자원을 더 사용한다.
+6. 임의 메소드를 정의할 수 있다.
+
+### 함수형 컴포넌트
+```javascript
+import React from "react"
+
+const App = () => {
+  const name = "함수형 컴포넌트"
+  return <div>{name}</div>
+}
+
+export default App
+```
+1. state, lifeCycle 관련 기능사용 불가능하다. (Hook을 통해 해결)
+2. 클래스형보다 메모지 자원을 덜 사용한다.
+3. 컴포넌트 선언이 편하다.
+
+> es6 화살표 함수와 일반 function() 함수의 차이 : <br>
+> 일반 함수(function())는 자신이 종속된 객체를 this로 가리키며, 화살표 함수(() => {})는 자신이 종속된 인스턴스를 가리킨다.
+
+## 10.3 차이 : state
+### 클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      test1: [],
+      test2: "",
+      number: 1
+    }
+  }
+  testFunction = () => {
+    this.setState({ number : number +1 })
+  }
+  render() {
+    const name = "클래스형 컴포넌트"
+    return <div>{name}</div>
+  }
+}
+
+export default App
+```
+
+1. constructor 안에서 this.state 초기 값 설정 가능
+2. counstructor 없이도 바로 state 초기값을 설정 가능
+3. this.setState() 를 통해 state값을 변경
+4. 클래스형의 state는 객체형식
+
+### 함수형 컴포넌트
+```javascript
+import React, { useState } from "react"
+
+const App = () => {
+  const [test1, setTest1] = useState([])
+  const [test2, setTest2] = useState("")
+  const [number, setNumber] = useState(0)
+  
+  const testFunctiond = () => {
+    setNumber(number +1)
+  }
+  
+  const name = "함수형 컴포넌트"
+  return <div>{name}</div>
+}
+
+export default App
+```
+1. useState 함수로 state를 사용한다.
+2. useState 함수를 호출하면 배열이 반환되는데 첫 번째 원소는 현재 상태, 두번째 원소는 상태를 바꿔주는 함수이다.
+
+
+## 10.4 차이 : props
+
+> **Props 란?**
+> - 컴포넌트의 속성을 설정
+> - 읽기 전용 (컴포넌트 자체 props를 수정하면 안된다.)
+> - 모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 순수 함수처럼 동작해야한다.
+> - 수정되는 값은 state 이다.
+
+### 클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+  static defaultProps = {
+    name: "이름 없음"
+  }
+  render() {
+    const {number, testName} = this.props;
+    const title = "클래스형 컴포넌트";
+    return <div>{testName}의 나이는 {number}살 입니다.</div>
+  }
+}
+
+// static 키워드와 함께 클래스 내부에 선언 가능
+// App.defaultProps = {
+//   name: "이름 없음"
+// }
+
+export default App
+```
+
+1. this.props로 통해 값을 불러올 수 있다.
+
+### 함수형 컴포넌트
+```javascript
+import React, { useState } from "react"
+
+const App = ({ number, testName }) => {
+  const title = "함수형  컴포넌트"
+  
+  return <div>{testName}의 나이는 {number}살 입니다.</div>
+}
+```
+
+1. props를 불러올 필요 없이 바로 호출 할 수 있다.
+
+## 10.5 차이 : 이벤트 핸들링
+
+### 클래스형 컴포넌트
+```javascript
+import React, { Component } from "react"
+
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      number: 1
+    }
+  }
+  onClickFunc = () => {
+    this.setState({ number : number +1 })
+  }
+  render() {
+    const title = "클래스형 컴포넌트"
+    return (
+      <div>
+        <button onClick={ this.onClickFunc }>++1</button>
+      </div>
+    )
+  }
+}
+
+export default
+```
+1. 함수 선언시 화살표 함수로 바로 선언 가능하다.
+2. 요소에 적용할때 this.를 붙여줘야한다.
+
+### 함수형 컴포넌트
+```javascript
+import React, { useState } from "react"
+
+const App = ({ number, testName }) => {
+  const [number, setNumber] = useState("")
+  
+  const onClickFunc = () => {
+    setNumber(number + 1)
+  }
+  const title = "함수형  컴포넌트"
+  
+  return (
+    <div>
+      <button onClick={ this.onClickFunc }>++1</button>
+    </div>
+  )
+}
+```
+1. const + 함수 형태로 선언해야 한다.
+2. 요소에 적용할때 this가 필요없다.
+
+## 10.6 차이 : Life Cycle
+> **Life Cycle이란?** <br>
+> React에서 컴포넌트는 여러 종류의 "생명주기 메소드" 를 가지며 이 메소드를 오버라이딩(상속하여 재정의) 하여 특정 시점에 코드가 실행되도록 설정 <br>
+> 클래스 컴포넌트에만 해당되는 내용이며, 함수형 컴포넌트는 Hook를 사용하여 생명주기에 원하는 동작을 함
+
+### 클래스형 컴포넌트
+
+![img1 daumcdn](https://user-images.githubusercontent.com/103430498/216218146-6af55aac-fe1c-4fc6-a9be-96bd77fd2e1d.png)
+
+#### Mounting (생성 될 때)
+> 컴포넌트가 인스턴스로 생성되고 DOM 트리에 삽입되어 브라우저상에 나타나는 과정
+##### constructor
+- 시점
+  - 브라우저상에 나타날때 가장 처음 실행되는 함수
+- 사용이유 
+  - 생성자 메서드로 this.state의 초기값 설정, 인스턴스에 이벤트 처리 메서드를 바인딩하기 위해 사용한다.
+  - super(props)를 첫 줄에 필수로 사용한다.
+```javascript
+constructor(props) {
+  super(props)
+  this.state = {
+    number: 1
+  }
+}
+```
+##### static getDerivedStateFromProps
+- 시점
+  - 컴포넌트가 처음 렌더링 되기 전에도 호출 되고 그 이후 리렌더링 되기 전에도 매번 실행됩니다
+- 사용이유
+  - props로 받은 값을 state에다가 넣고 싶을때 사용 (거의 쓰지 않는 함수.)
+```javascript
+static getDerivedStateFromProps(nextProps, prevState) {
+  if (preveState.value !== nextState.value) {
+    return {
+      value: nextState.value
+    }
+  }
+  // 변경 사항이 없거나 아무것도 안할때
+  return null
+}
+```
+##### render
+- 컴포넌트를 렌더링하는 메서드
+
+##### componentDidMount
+- 시점
+  - 컴포넌트가 생성된 직후, 트리에 삽입된 직후에 호출.
+  - 이 메서드가 호출되는 시점에는 만든 컴포넌트가 화면에 나타난 상태
+- 사용이유
+  - 외부 라이브러리를 사용하여 특정 DOM에다가 차트를 그릴때,
+  - 컴포넌트에서 필요로하는 데이터 요청, DOM의 속성을 읽거나 직접 변경하는 작업을 할 때 등
+
+#### Updating (업데이트 할 때) 
+> 컴포넌트 props 또는 state가 바뀌었을 때
+
+##### static getDerivedStateFromProps
+- Mounting 에서 등장한 메서드로 업데이트에서도 호출
+
+##### shouldComponentUpdate
+- 시점
+  - props 또는 state가 새로운 값으로 갱신되어 렌더링이 발생하기 직전에 호출
+
+- 사용이유
+  - 성능최적화를 위해 사용한다. 컴포넌트가 리렌더링을 할지 말지 결정하는 메소드이다. <br>
+     (함수형 컴포넌트에선 useMemo()가 같은 역할을 한다.)
+  - 리액트 공식 홈페이지에서는 이 메소드 대신 PureComponent를 사용하는 것이 좋다고 한다.
+```javascript
+shouldComponentUpdate(nextProps, nextState) {
+  return this.props.value !== netxProps.value
+}
+```
+
+##### render
+- Mounting 에서 등장한 메서드로 업데이트에서도 호출됩니다.
+
+##### getSnapshotBeforeUpdate
+
+- 시점
+  - render 메서드 호출 후 브라우저에 나타나기 바로 직전에 호출되는 메서드이다. <br>
+    (render() -> getSnapshotBeforeUpdate -> DOM에 변화 반영 -> componentDidUpdate)
+
+- 사용이유
+  - 브라우저에 그리기 전에 스크롤의 위치, DOM의 크기를 사전에 알고 싶을 때,
+  - 업데이트 되기 직전에 DOM 함수를 return 시켜가지고 그 return된 값을 componentDidUpdate에서 받을 수 있다
+  - 이 메소드는 사용할 일이 별로 없지만 Hook에서 대체할 수 있는 기능이 아직 없음
+
+##### componentDidUpdate
+- 시점
+  - 리렌더링을 완료한 후 실행되는 메서드이다. 화면에 우리가 원하는 변화가 모두 반영되고 난 뒤 호출
+- 사용이유
+  - 컴포넌트가 업데이트 되었을 시에 DOM을 조작하기 위해 사용하거나
+  - 이전과 현재의 props를 비교하여 네트워크 요청을 보내는 작업을 할 때 유용
+
+#### Unmounting (제거 할 때)
+> 컴포넌트가 브라우저상에서 사라질때
+
+##### componentWillUnmount
+
+- 시점
+  - 컴포넌트가 브라우저상에서 사라질때
+- 사용이유
+  - 주로 DOM에 직접 등록했었던 이벤트를 제거하거나
+  - setTimeout이 있다면 타이머를 제거, 외부 라이브러리 인스턴스를 제거하기 위해 사용
+
+#### 컴포넌트 에러가 발생했을때
+
+##### componentDidCatch
+- 시점 :
+  - render 함수에서 에러가 날 때, 에러가 발생할 수 있는 컴포넌트의 부모 컴포넌트에서 작업해야한다.
+- 사용이유 : 
+  - 사용자에게는 에러 화면을 보여주고 , 개발자들은 이때 에러 내용을 서버로 전달할 때 사용.
+
+```javascript
+class App extends Component {
+  state = {
+    error: false
+  }
+  
+  componentDidCatch(error, info) {
+    this.setState({
+      error: true
+    })
+  }
+  render() {
+    if(this.state.error) {
+      return <p>ERROR</p>
+    }
+    return <p>Not ERROR</p>
+  }
+}
+
+export default App
+```
+
+
+
+
 
 
 
