@@ -582,6 +582,57 @@ const UserDispatch = createContext(null);
 const value = useContext(Mycontext);
 ```
 
+## 8.5 Context API 예제
+```javascript
+import React, { createContext, useState } from "react";
+
+const ThemeContext = createContext();
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+const ChildComponent = () => {
+  const { theme, toggleTheme } = React.useContext(ThemeContext);
+  return (
+    <div>
+      <h2>Child component</h2>
+      <p>Current theme: {theme}</p>
+      <button onClick={toggleTheme}>Toggle theme</button>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <ChildComponent />
+    </ThemeProvider>
+  );
+};
+```
+- Context API를 사용하면 컴포넌트의 props 트리를 타고 데이터를 전달하는 대신, 직접적으로 컨텍스트에서 값을 가져오고 수정할 수 있다.
+- 사용 방법
+  - React.createContext를 사용하여 Context를 만든 다음,
+  - Context.Provider 컴포넌트를 사용하여 값을 제공,
+  - Context.Consumer 컴포넌트를 사용하여 값을 소비.
+- createContext 함수를 사용하여 ThemeContext 컨텍스트를 생성한다.
+- ThemeProvider 컴포넌트를 정의하여, useState 함수를 사용하여 theme 값을 관리한다.
+- toggleTheme 함수를 정의하여, 현재 테마를 전환한다.
+- ThemeContext.Provider 컴포넌트를 렌더링하여, 현재 테마와 toggleTheme 함수를 제공한다.
+- ChildComponent 컴포넌트를 정의하고, useContext 함수를 사용하여 ThemeContext에서 현재 테마와 toggleTheme 함수를 조회한다.
+- App 컴포넌트에서, ThemeProvider 컴포넌트를 렌더링하고 ChildComponent 컴포넌트를 자식으로 제공한다.
+
 # 9. 불변성 관리
 - 불변성이 프로그래밍에서 주목받는 이유는 변경 가능한 상태를 여러 곳에서 공유하게 됨으로써 발생하는 여러 가지 문제를 해결하기 위함.
 
